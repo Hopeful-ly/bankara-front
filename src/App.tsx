@@ -1,45 +1,58 @@
-import { useState } from 'react'
-import logo from './logo.svg'
-import './App.css'
+import React, { useState } from "react";
+import styled from "styled-components";
+import {
+  Wrapper,
+  SideBarWrapper,
+  SideBarItemWrapper,
+  SideBarItemBox,
+} from "./components";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faBoxes, faQuestion } from "@fortawesome/free-solid-svg-icons";
+import { useAppDispatch, useAppSelector } from "src/app/hooks";
+import { changeTab, Tab } from "src/features/tab";
 
-function App() {
-  const [count, setCount] = useState(0)
-
+const SideBarItem: React.FC<{ active?: boolean; tab?: Tab }> = ({
+  active,
+  children,
+  tab,
+}) => {
+  const currentTab = useAppSelector((s) => s.tab.currentTab);
+  const dispatch = useAppDispatch();
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>Hello Vite + React!</p>
-        <p>
-          <button type="button" onClick={() => setCount((count) => count + 1)}>
-            count is: {count}
-          </button>
-        </p>
-        <p>
-          Edit <code>App.tsx</code> and save to test HMR updates.
-        </p>
-        <p>
-          <a
-            className="App-link"
-            href="https://reactjs.org"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Learn React
-          </a>
-          {' | '}
-          <a
-            className="App-link"
-            href="https://vitejs.dev/guide/features.html"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Vite Docs
-          </a>
-        </p>
-      </header>
-    </div>
-  )
+    <SideBarItemWrapper>
+      <SideBarItemBox
+        $active={tab === currentTab}
+        onClick={() => {
+          if (tab) {
+            dispatch(changeTab(tab));
+          }
+        }}
+      >
+        {children}
+      </SideBarItemBox>
+    </SideBarItemWrapper>
+  );
+};
+
+const SideBar = () => {
+  return (
+    <SideBarWrapper>
+      <SideBarItem active>
+        <FontAwesomeIcon icon={faBoxes} />
+      </SideBarItem>
+      <SideBarItem />
+      <SideBarItem />
+      <SideBarItem />
+      <SideBarItem />
+    </SideBarWrapper>
+  );
+};
+function App() {
+  return (
+    <Wrapper>
+      <SideBar />
+    </Wrapper>
+  );
 }
 
-export default App
+export default App;
