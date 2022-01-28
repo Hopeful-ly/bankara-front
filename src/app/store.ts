@@ -1,11 +1,13 @@
 import { configureStore } from "@reduxjs/toolkit";
 import { authSlice } from "@features/auth";
-import { tabSlice } from "@features/tab";
+import { loginSlice } from "@features/login";
+import { bankaraApi } from "@features/api";
 
 export const store = configureStore({
   reducer: {
     [authSlice.name]: authSlice.reducer,
-    [tabSlice.name]: tabSlice.reducer,
+    [loginSlice.name]: loginSlice.reducer,
+    [bankaraApi.reducerPath]: bankaraApi.reducer,
   },
 });
 
