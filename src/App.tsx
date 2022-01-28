@@ -15,6 +15,7 @@ import {
   LoginInputIconWrapper,
   FormButton,
   ButtonWrapper,
+  Description,
 } from "./components";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
@@ -131,9 +132,9 @@ const LoginFormInput: React.FC<{
   const dispatch = useAppDispatch();
   return (
     <LoginInputWrapper
-      initial={{ height: 0, margin: 0, padding: 0, opacity: 0, scale: 1 }}
-      animate={{ height: 28, margin: 10, padding: 10, opacity: 1, scale: 1 }}
-      exit={{ height: 0, margin: 0, padding: 0, opacity: 0, scale: 0.1 }}
+      initial={{ height: 0, margin: 0, padding: 0, opacity: 0 }}
+      animate={{ height: 28, margin: 10, padding: 10, opacity: 1 }}
+      exit={{ height: 0, margin: 0, padding: 0, opacity: 0 }}
       transition={{ bounce: false }}
       id={children?.toString()}
     >
@@ -152,6 +153,7 @@ const LoginForm: React.FC = () => {
   const { email, name, page, password } = loginState;
 
   const dispatch = useAppDispatch();
+  const [error, setError] = useState("");
 
   const submit = useCallback(async () => {
     console.log("credentials", name, email, password);
@@ -191,8 +193,8 @@ const LoginForm: React.FC = () => {
         })
       )?.data as CreateUserResponse;
       console.log(res);
-      if (!res.status) {
-        console.log("error", res.msg);
+      if (!res.status && res.msg) {
+        setError(res.msg);
         return;
       }
       user = res.user;
@@ -241,12 +243,14 @@ const LoginForm: React.FC = () => {
           Sign In
         </FormButton>
       </ButtonWrapper>
+      <Description>{!!error && <>{error}</>}</Description>
     </>
   );
 };
 const LoginProvider: React.FC = ({ children }) => {
   const dispatch = useAppDispatch();
   const auth = useAppSelector((store) => store.auth);
+  const [loading, setLoading] = useState(true);
 
   const location = useLocation();
   const navigate = useNavigate();
@@ -268,6 +272,7 @@ const LoginProvider: React.FC = ({ children }) => {
           if (data.status) {
             dispatch(setUser(data.user));
           }
+          setLoading(false);
         });
     }
   }, []);
@@ -276,7 +281,7 @@ const LoginProvider: React.FC = ({ children }) => {
     <>
       <BlurWrapper blur={!auth.user}>{children}</BlurWrapper>
       <AnimatePresence>
-        {!auth.user && (
+        {!auth.user && !loading && (
           <PopupWrapper
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}

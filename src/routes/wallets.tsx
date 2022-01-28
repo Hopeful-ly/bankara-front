@@ -27,7 +27,12 @@ import {
   faTag,
   faUser,
 } from "@fortawesome/free-solid-svg-icons";
-import { bankaraApi } from "@features/api";
+import {
+  bankaraApi,
+  CreateUserCardResponse,
+  LoginUserResponse,
+} from "@features/api";
+import { setUser } from "@features/auth";
 
 const WalletsWrapper = styled.div`
   height: 100%;
@@ -201,6 +206,7 @@ const AddCardForm: React.FC<{ blur: any }> = ({ blur }) => {
     title: false,
     card_number: false,
     name: false,
+    remote: "",
   });
   const dispatch = useAppDispatch();
   const [isOpen, setOpen] = useState<boolean>(false);
@@ -249,16 +255,36 @@ const AddCardForm: React.FC<{ blur: any }> = ({ blur }) => {
         user_id: user.id,
       })
     );
-    const res = await bankaraApi.util.getRunningOperationPromise(
+    const res = (await bankaraApi.util.getRunningOperationPromise(
       "createUserCard",
       {
         ...data,
         user_id: user.id,
       }
-    );
+    )) as any;
+    const resData = res?.data as CreateUserCardResponse;
+    if (resData?.status) {
+      blur(false);
+      setData({
+        balance: 0,
+        card_number: 0,
+        name: "",
+        provider: "",
+        title: "",
+      });
+      const newCard = resData?.card as Card;
+      dispatch(
+        setUser({
+          ...user,
+          cards: [...user.cards, newCard],
+        })
+      );
+    } else if (res?.data.msg) {
+      setError((errs) => ({ ...errs, remote: res?.data.msg }));
+    }
     console.log("sent data:", { ...data, user_id: user.id });
-    console.log("responded !", res?.data);
-  }, [data, user]);
+    console.log("responded !", resData);
+  }, [data, user, dispatch, setData, blur, setError]);
   return (
     <>
       <InputWrapper $error={errors.title}>

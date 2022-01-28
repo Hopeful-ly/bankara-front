@@ -157,6 +157,11 @@ export const FormButton = styled(motion.button)<{ active?: boolean }>`
   margin: 20px;
   margin-top: 50px;
 `;
+export const Description = styled.p`
+  font-size: 1rem;
+  font-family: Poppins;
+  color: ${({ theme }) => theme.colors.textSecondary};
+`;
 export const PopupTitle = styled(motion.h2)`
   font-size: 2.5rem;
   font-family: Poppins;
