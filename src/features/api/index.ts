@@ -90,6 +90,12 @@ export const bankaraApi = createApi({
         method: "get",
       }),
     }),
+    logOutUser: builder.query<LogOutUserResponse, LogOutUserArgs>({
+      query: ({}) => ({
+        url: `logout`,
+        method: "get",
+      }),
+    }),
   }),
 });
 
@@ -119,6 +125,8 @@ export interface ResponseBase {
   msg?: string;
 }
 
+export interface LogOutUserResponse extends ResponseBase {}
+export interface LogOutUserArgs {}
 export interface GetUserCardsResponse extends ResponseBase {
   cards: {
     title: string;

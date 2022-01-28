@@ -7,6 +7,7 @@ import { AnimatePresence, motion } from "framer-motion";
 import {
   BlurWrapper,
   ButtonWrapper,
+  Description,
   FormButton as Button,
   LoginInput as FormInput,
   LoginInputIconWrapper as InputIconWrapper,
@@ -379,6 +380,7 @@ const AddCardForm: React.FC<{ blur: any }> = ({ blur }) => {
         </Button>
         <Button onClick={() => blur(false)}>Cancel</Button>
       </ButtonWrapper>
+      {!!errors.remote && <Description>{errors.remote}</Description>}
     </>
   );
 };
@@ -443,9 +445,12 @@ const Wallets: React.FC = () => {
               <CardList>
                 {!!user?.cards?.length && (
                   <>
-                    {user.cards.map((card) => (
-                      <Wallet key={card.id} {...card} />
-                    ))}
+                    {user.cards.map((card) => {
+                      console.log(card);
+                      return (
+                        !!card && <Wallet key={card?.id || ""} {...card} />
+                      );
+                    })}
                     <Wallet fake call={callCardPopup} />
                   </>
                 )}

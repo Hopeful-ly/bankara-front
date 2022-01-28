@@ -66,6 +66,7 @@ const SideBarItem: React.FC<{
   const [isHovered, setHovered] = useState(false);
   const location = useLocation();
   const navigate = useNavigate();
+
   return (
     <SideBarItemWrapper>
       <SideBarItemBox
@@ -102,6 +103,14 @@ const SideBarItem: React.FC<{
 
 const SideBar = () => {
   const dispatch = useAppDispatch();
+  const logOut = useCallback(async () => {
+    dispatch(bankaraApi.endpoints.logOutUser.initiate({}));
+    const res = await bankaraApi.util.getRunningOperationPromise(
+      "logOutUser",
+      {}
+    );
+    dispatch(setUser(null));
+  }, [dispatch]);
   return (
     <SideBarWrapper>
       <SideBarItem tab="dashboard">
@@ -116,7 +125,7 @@ const SideBar = () => {
       <SideBarItem disabled name="settings">
         <FontAwesomeIcon icon={faCogs} />
       </SideBarItem>
-      <SideBarItem name="logout" onClick={() => dispatch(setUser(null))}>
+      <SideBarItem name="logout" onClick={logOut}>
         <FontAwesomeIcon icon={faSignOutAlt} />
       </SideBarItem>
     </SideBarWrapper>
