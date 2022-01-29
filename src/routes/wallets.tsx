@@ -61,12 +61,14 @@ const WalletsOverviewDescryption = styled.p`
 `;
 
 const CardList = styled.ul`
+  position: relative;
+  left: -20px;
   display: flex;
   padding: 0px;
   width: 100%;
   height: max-content;
   justify-content: flex-start;
-  align-items: flex-start;
+  align-items: center;
   align-content: flex-start;
   flex-direction: row;
   flex-wrap: wrap;
@@ -74,7 +76,7 @@ const CardList = styled.ul`
 `;
 
 const WalletWrapper = styled.li<{ $fake?: boolean }>`
-  width: 240px;
+  width: ${({ theme }) => (theme.md ? "80%" : "240px")};
   height: 140px;
   border-radius: 20px;
   padding: 30px;
@@ -380,7 +382,9 @@ const AddCardForm: React.FC<{ blur: any }> = ({ blur }) => {
         </Button>
         <Button onClick={() => blur(false)}>Cancel</Button>
       </ButtonWrapper>
-      {!!errors.remote && <Description>{errors.remote}</Description>}
+      <Description animate={{ opacity: !!errors.remote ? 1 : 0 }}>
+        {errors.remote || "|"}
+      </Description>
     </>
   );
 };

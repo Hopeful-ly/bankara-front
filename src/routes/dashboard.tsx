@@ -1,5 +1,5 @@
 import { useAppSelector } from "@app/hooks";
-import React from "react";
+import React, { useMemo } from "react";
 import styled, { createGlobalStyle, css, useTheme } from "styled-components";
 import { LeftPadWrapper, TabWrapper } from ".";
 import Chart from "react-apexcharts";
@@ -53,11 +53,12 @@ const DashboardSectionsWrapper = styled.div`
   align-content: flex-start;
   align-items: flex-start;
   justify-content: start;
+  gap: 20px;
 `;
 const DashboardSection = styled.div<{ $width: number; $height: number }>`
   ${({ $height, $width }) => `
-    height: ${$height - 4}%;
-    width: ${$width - 4}%;
+    height: ${$height}%;
+    width: ${$width}%;
   `}
 `;
 const DashboardSectionTitle = styled.div`
@@ -98,24 +99,27 @@ const DashboardSections = () => {
   return (
     <DashboardSectionsWrapper>
       <ChartStyles />
-      <DashboardSection $width={40} $height={100}>
-        <DashboardSection $width={100} $height={50}>
+      <DashboardSection $width={theme.md ? 100 : 40} $height={100}>
+        <DashboardSection $width={100} $height={theme.md ? 100 : 50}>
           <DashboardSectionTitle>Activities</DashboardSectionTitle>
           <Chart
             height="100%"
             width="100%"
             type="line"
-            series={[
-              fakeSeriesGenerator("Recieved"),
-              fakeSeriesGenerator("Sent"),
-            ]}
+            series={useMemo(
+              () => [
+                fakeSeriesGenerator("Recieved"),
+                fakeSeriesGenerator("Sent"),
+              ],
+              []
+            )}
             options={{
               ...chartOptions,
               colors: [theme.colors.primary, theme.colors.danger],
             }}
           />
         </DashboardSection>
-        <DashboardSection $width={100} $height={50}>
+        <DashboardSection $width={100} $height={theme.md ? 100 : 50}>
           <DashboardSectionTitle>Statistics</DashboardSectionTitle>
           <Chart
             type="pie"
@@ -165,7 +169,7 @@ const DashboardSections = () => {
           />
         </DashboardSection>
       </DashboardSection>
-      <DashboardSection $width={50} $height={100}>
+      <DashboardSection $width={theme.md ? 100 : 40} $height={100}>
         <DashboardSectionTitle>Utilities</DashboardSectionTitle>
         <DashboardUtilities>Work In Progress...</DashboardUtilities>
       </DashboardSection>
@@ -175,16 +179,19 @@ const DashboardSections = () => {
 const DashboardUtilities = styled.div`
   background-color: ${({ theme }) => theme.colors.bgPrimary};
   color: ${({ theme }) => theme.colors.primary};
+  position: relative;
+  left: -20px;
   margin-top: 40px;
   border-radius: 20px;
   display: inline-flex;
   justify-content: center;
   font-family: Poppins;
-  font-weight: 500;
-  font-size: 3rem;
+  font-weight: 700;
+  font-size: 1.5rem;
   align-items: center;
-  width: 90%;
-  height: 80%;
+  /* padding: 20px; */
+  height: 500px;
+  width: 100%;
   /* box-shadow: 0px 0px 20px -14px black !important; */
 `;
 const Dashboard: React.FC = () => {

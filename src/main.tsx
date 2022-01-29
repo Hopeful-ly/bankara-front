@@ -6,12 +6,15 @@ import { store } from "./app/store";
 import { ThemeProvider } from "styled-components";
 import { GlobalStyles } from "./components";
 import { Provider } from "react-redux";
+import { useWindowSize } from "react-use";
 
-ReactDOM.render(
-  <React.StrictMode>
+const Main = () => {
+  const md = useWindowSize();
+  return (
     <Provider store={store}>
       <ThemeProvider
         theme={{
+          md: md.width <= 768,
           colors: {
             bgSecondary: "#FFFFFF",
             bgPrimary: "#F8F9FD",
@@ -29,6 +32,12 @@ ReactDOM.render(
         <App />
       </ThemeProvider>
     </Provider>
+  );
+};
+
+ReactDOM.render(
+  <React.StrictMode>
+    <Main />
   </React.StrictMode>,
   document.getElementById("root")
 );

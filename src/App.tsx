@@ -1,5 +1,5 @@
 import React, { useCallback, useEffect, useState } from "react";
-import styled from "styled-components";
+import styled, { useTheme } from "styled-components";
 import {
   Wrapper,
   SideBarWrapper,
@@ -19,6 +19,7 @@ import {
 } from "./components";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
+  faBars,
   faBoxes,
   faCogs,
   faEnvelope,
@@ -31,7 +32,7 @@ import {
   faWallet,
 } from "@fortawesome/free-solid-svg-icons";
 import { useAppDispatch, useAppSelector } from "./app/hooks";
-import { AnimatePresence } from "framer-motion";
+import { AnimatePresence, motion } from "framer-motion";
 import {
   ResetLogin,
   SetEmail,
@@ -100,9 +101,16 @@ const SideBarItem: React.FC<{
     </SideBarItemWrapper>
   );
 };
+const SideBarScreenWrapper = styled(motion.div)`
+  position: fixed;
+  z-index: 4;
+  width: 100vw;
+  height: 100vh;
+`;
 
-const SideBar = () => {
+const SideBar: React.FC<{ hook: any }> = ({ hook: [is, set] }) => {
   const dispatch = useAppDispatch();
+  const { md } = useTheme();
   const logOut = useCallback(async () => {
     dispatch(bankaraApi.endpoints.logOutUser.initiate({}));
     const res = await bankaraApi.util.getRunningOperationPromise(
@@ -111,24 +119,50 @@ const SideBar = () => {
     );
     dispatch(setUser(null));
   }, [dispatch]);
+  const closeSideBar = useCallback(() => {
+    set(false);
+  }, [set]);
   return (
-    <SideBarWrapper>
-      <SideBarItem tab="dashboard">
-        <FontAwesomeIcon icon={faBoxes} />
-      </SideBarItem>
-      <SideBarItem tab="wallets">
-        <FontAwesomeIcon icon={faWallet} />
-      </SideBarItem>
-      <SideBarItem disabled name="payments-log">
-        <FontAwesomeIcon icon={faMoneyBill} />
-      </SideBarItem>
-      <SideBarItem disabled name="settings">
-        <FontAwesomeIcon icon={faCogs} />
-      </SideBarItem>
-      <SideBarItem name="logout" onClick={logOut}>
-        <FontAwesomeIcon icon={faSignOutAlt} />
-      </SideBarItem>
-    </SideBarWrapper>
+    <>
+      {md && is && (
+        <SideBarScreenWrapper
+          className="disableSideBar"
+          onClick={(e: any) => {
+            if (e.target.classList.contains("disableSideBar")) {
+              closeSideBar();
+            }
+          }}
+        ></SideBarScreenWrapper>
+      )}
+      <SideBarWrapper
+        initial={{ x: -200 }}
+        animate={{ x: !md || (md && is) ? 0 : -200 }}
+        exit={{ x: -200 }}
+        transition={{ bounce: false }}
+      >
+        <SideBarItem onClick={closeSideBar} tab="dashboard">
+          <FontAwesomeIcon icon={faBoxes} />
+        </SideBarItem>
+        <SideBarItem onClick={closeSideBar} tab="wallets">
+          <FontAwesomeIcon icon={faWallet} />
+        </SideBarItem>
+        <SideBarItem onClick={closeSideBar} disabled name="payments-log">
+          <FontAwesomeIcon icon={faMoneyBill} />
+        </SideBarItem>
+        <SideBarItem onClick={closeSideBar} disabled name="settings">
+          <FontAwesomeIcon icon={faCogs} />
+        </SideBarItem>
+        <SideBarItem
+          name="logout"
+          onClick={() => {
+            closeSideBar();
+            logOut();
+          }}
+        >
+          <FontAwesomeIcon icon={faSignOutAlt} />
+        </SideBarItem>
+      </SideBarWrapper>
+    </>
   );
 };
 
@@ -252,7 +286,9 @@ const LoginForm: React.FC = () => {
           Sign In
         </FormButton>
       </ButtonWrapper>
-      <Description>{!!error && <>{error}</>}</Description>
+      <Description animate={{ opacity: !!error ? 1 : 0 }}>
+        {error || "|"}
+      </Description>
     </>
   );
 };
@@ -313,12 +349,43 @@ const routes: { [key: string]: any } = {
   settings: <></>,
   // logout: <></>,
 };
+
+const SideBarButtonWrapper = styled(motion.span)`
+  display: inline-block;
+  height: 50px;
+  width: 50px;
+  position: fixed;
+  top: 20px;
+  left: 20px;
+  z-index: 100;
+  cursor: pointer;
+`;
+
+const SideBarButton: React.FC<{ hook: any }> = ({ hook: [is, set] }) => {
+  const {
+    colors: { textPrimary },
+    md,
+  } = useTheme();
+  return (
+    <SideBarButtonWrapper
+      initial={{ y: -200 }}
+      animate={{ y: !md || is ? -200 : 0 }}
+      exit={{ y: -200 }}
+      onClick={() => set((v: any) => !v)}
+    >
+      <FontAwesomeIcon icon={faBars} size="2x" color={textPrimary} />
+    </SideBarButtonWrapper>
+  );
+};
 function App() {
+  const { md } = useTheme();
+  const [sideBar, setSideBar] = useState(false);
   return (
     <Wrapper>
       <BrowserRouter>
         <LoginProvider>
-          <SideBar />
+          <SideBar hook={[sideBar, setSideBar]} />
+          <SideBarButton hook={[sideBar, setSideBar]} />
           <Routes>
             {Object.keys(routes).map((route) => {
               return <Route key={route} path={route} element={routes[route]} />;

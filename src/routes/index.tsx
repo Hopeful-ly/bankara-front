@@ -1,12 +1,14 @@
+import { motion } from "framer-motion";
 import styled from "styled-components";
 
-export const TabWrapper = styled.div`
+export const TabWrapper = styled(motion.div)`
   height: 100%;
   /* width: 100%; */
-
-  padding-left: 110px;
   overflow-y: auto;
+
+  transition: all 0.2s;
+  ${({ theme }) => !theme.md && "padding-left: 110px;"}
 `;
 export const LeftPadWrapper = styled.div`
-  padding-left: 50px;
+  padding-left: 40px;
 `;

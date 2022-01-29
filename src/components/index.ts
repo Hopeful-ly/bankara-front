@@ -9,7 +9,7 @@ export const Wrapper = styled.div`
   background-color: ${({ theme }) => theme.colors.bgSecondary};
 `;
 
-export const SideBarWrapper = styled.div`
+export const SideBarWrapper = styled(motion.div)`
   position: fixed;
   left: 0px;
   top: 0px;
@@ -157,7 +157,7 @@ export const FormButton = styled(motion.button)<{ active?: boolean }>`
   margin: 20px;
   margin-top: 50px;
 `;
-export const Description = styled.p`
+export const Description = styled(motion.p)`
   font-size: 1rem;
   font-family: Poppins;
   color: ${({ theme }) => theme.colors.textSecondary};
